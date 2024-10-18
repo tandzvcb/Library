@@ -21,4 +21,7 @@ public interface UserDao {
     int updateInforUser(User userUpdate);
 
     public int changePass(String id, String newPass);
+
+    public void updateOtp(User user);
+    String getOtpByEmail(String email);
 }

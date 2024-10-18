@@ -5,6 +5,7 @@
  */
 package user.dao;
 
+import database.JDBCUtil;
 import sqlite.Mysql;
 import user.model.User;
 import util.HashPassword;
@@ -259,5 +260,35 @@ public class MysqlUserDao implements UserDao {
             Logger.getLogger(MysqlUserDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return RESULT_SQLITE; //7 lỗi
+    }
+    @Override
+    public void updateOtp(User user) {
+        Connection connection = JDBCUtil.getConnection();
+        String sql = "UPDATE users SET otp = ? WHERE email = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, user.getOtp());
+            preparedStatement.setString(2, user.getEmail());
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public String getOtpByEmail(String email) {
+        Connection connection = JDBCUtil.getConnection();
+        String sql = "SELECT otp FROM users WHERE email = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("otp");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
